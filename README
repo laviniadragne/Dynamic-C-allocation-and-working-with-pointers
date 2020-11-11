@@ -1,0 +1,79 @@
+Nume: Dragne Lavinia-Stefana
+Grupa: 314 CA
+
+PROGRAMAREA CALCULATOARELOR
+Tema #2 Alocare dinamica
+
+Acesta este fisierul README corespunzator prezentarii implementarii rezolvarilor mele la tema 2.
+
+Continutul proiectului este urmatorul:
+
+-star_dust.c contine codul sursa al programului corespunzator Task-ului 1,2 si 3;
+
+-un fisier Makefile ce are urmatoarele utilizari:
+	-build: compileaza codul sursa in executabil pentru fiecare problema;
+	-clean: sterge toate executabilele create;
+
+-acest fisier README.
+
+Prezentarea solutiei:
+
+Semnificatia variabilelor: 
+
+n=numarul de linii al imaginii
+j,i=contoare
+s=suma pixelilor de pe marginea imaginii
+nr=numarul de pixeli de pe margine
+k=numarul de modificari aplicate hartii
+val_noua=valoarea ce va aparea in locul datelor vechi, in cazul operatiei de modify
+linie=linia pe care se doresc modificari
+bloc=blocul de bytes/octeti corespunzatori ce se doresc a fi modificati
+d=dimensiunea unei uniuni de gauri negre
+maxim= masivitatea gaurii negre
+i_min,j_min=coordonatele locatiei gaurii negre maxime
+op=initiala operatiei care va modifica harta
+dim_date=initiala pentru tipul de date ce trebuie modificate
+m[]=vector cu numarul de elemente de pe fiecare linie
+a[][]=matricea hartii
+m_a=media aritmetica a bytes-lor
+*byte=pointer cu care accesez fiecare byte in parte
+
+
+Algoritmul:
+
+In primul rand, matricea hartii si vectorul cu numarul de elemente de pe fiecare linie se aloca dinamic pentru ca la fiecare moment fiecare linie sa aiba exact numarul de bytes minim necesari.
+
+Task-ul 1
+
+Citesc numarul de linii ale imaginii, aloc dinamic, matricea si vectorul, intocmai cum am explicat mai sus. Functia "alocare_citire" aloca memorie matricei-harti si in interiorul ei se citeste si fiecare element din harta. In functia sum_bytes, folosind un pointer de tip char, parcurg byte cu byte matricea pe marginile ei, facand suma bytes-lor, pe care in final, o returnez. Matricea o parcurg cu 4 for-uri, de la stanga la dreapta, de sus in jos, in sensul acelor de ceas, tinand cont ca elementul ce se afla la intersectia dintre o linie si o coloana terminala, sa nu apara de 2 ori in suma. Nr reprezinta numarul de bytes de pe margine si este suma de 4 numere, reprezentand bytes de pe prima linie, coloana terminala, ultima linie si prima coloana a hartii. Pentru a obtine media aritmetica cu 7 zecimale este nevoie sa facem cust la catul impartirii, sumei intregi, la numarul de bytes marginali.
+
+Task-ul 2
+
+Citesc numarul de operatii, tipul lor, linia si blocul de date, ce trebuie modificat. In functie de tipul operatiei si de dimensiunea datelor, ce trebuie modificate, se citesc valorile noi pe care trebuie sa le introducem in harta si se aleg operatiile corespunzatoare, apelandu-se cate o functie pentru fiecare tip si dimensiune de date. 
+Functia "delete_char" foloseste un pointer de tip char, ce primeste adresa primului element de pe linia corespunzatoare, si pointeaza pe blocul cerut, zeroinzandu-l. 
+Algoritmii pentru functiile "delete_short" si "delete_int" urmeaza acelasi tipar, doar ca am utilizat un pointer de tip short, respectiv int.
+Functia "swap_char" nu este necesara pentru ca daca este nevoie de swap pe un tip de date char nu ar provoca nicio modificare la nivelul matricei, elementul interschibandu-se cu el insusi. 
+Functia "swap_short" utilizeaza un pointer numit "byte", de tip char, ce primeste adresa primei valori de pe linia date ca parametru si pointeaza pe fiecare dintre bytes-ii ce alcatuiesc short-ul, ce trebuie modificat. Cu ajutorul pointer-lui si al variabilei auxiliare, aux, se interschimba bytes-ii ceruti.
+Functia "swap_int" are un algoritm asemanator, doar ca, din cauza int-ului, acesta fiind stocat pe 4 bytes, se vor face 4 interschimbari de valori, intre bytes-ii egal departati. 
+Functia "modify_short" este utilizata pentru operatia de modificare. Se calculeaza numarul de int-uri necesar operatiei si in cazul in care linia respectiva nu are o dimensiune destul de mare,se realoca memorie pentru matrice. In variabila aux se stocheaza pointer-ul rezultat la realocare. Dupa ce se verifica daca realocarea de memorie a avut loc cu succes, se zeroizeaza toti bytes-ii pana la short-ul ce trebuie sa primeasca o noua valoare. Se actualizeaza in vectorul m[] numarul de elemente de pe linie. Daca short-ul, ce trebuie modificat, se afla pe o pozitie impara, cel de dupa el trebuie sa primeasca si el valoarea 0. 
+Functiile "modify_char" si "modify_int" functioeaza pe algoritmi similari, diferenta consta in formula pentru numarul de int-uri necesari pentru operatia de modify si de numarul de bytes ce trebuie parcursi, cu ajutorul unui for, pentru zeroizare.
+In acest algoritm s-a tinut cont de faptul ca o variabila de tip char ocupa 1 octet, una de tip short 2 octeti, iar una de tip int 4 octeti, date utilizate pe baza enuntului.
+Se afiseaza cu ajutorul a 2 for-uri harta modificata.
+
+Task-ul 3
+
+Parcurg matricea byte cu byte, cu ajutorul unui pointer numit "byte". Daca valoarea din byte-ul aferent este 0 (conditia de gaura neagra), atunci pornesc algoritmul de fill, care imi calculeaza supermasivitatea gaurii negre de care apartine valoarea curenta. Se adauga 1 numarului rezultat de functia "alg_fill" deoarece se ia in calcul si gaura neagra aferenta, nu doar cele in care putem ajunge.
+Functia "alg_fill" calculeaza supermasivitatea unei uniuni de gauri negre. Se folosesc 2 vectori de directie di[], dj[] pentru cei 4 vecini, sus, jos, stanga, dreapta, ai unei gauri negre. Folosind un pointer *byte de tip char, marchez gaura neagra in care ma aflu. Merg la cei 4 vecini ai gaurii negre si daca indeplinesc conditia din functia OK, apeland recursiv algoritmul de fill, noua gaura neagra va fi unul din vecini. Functia OK verifica, pe baza unor coordonate date, daca byte-ul corespunzator se afla in harta si are valoarea 0, conditia de gaura neagra. 
+In final, in main, memorez, pe masura ce calculez, supermasivitatile si indicii minimi, uniunii de gauri negre, dupa care ii afisez.
+
+Eliberez memoria alocata matricei-harta si vectorului, ce retine numarul de elemente de pe fiecare linie.
+
+ 
+
+
+
+
+
+
+
+
